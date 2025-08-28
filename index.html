@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Peso</title>
+    <style>
+        /* --- ESTILOS (CSS) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 320px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .gender-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            color: #555;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result-container {
+            margin-top: 25px;
+            min-height: 150px; /* Espacio reservado para la imagen */
+        }
+        
+        #rotating-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%; /* Hace la imagen redonda */
+            object-fit: cover;
+        }
+
+        /* Clase para la animación de giro */
+        .spinning {
+            animation: spin-counter-clockwise 2s linear infinite;
+        }
+        
+        /* Clase para ocultar elementos */
+        .hidden {
+            display: none;
+        }
+
+        /* Definición de la animación */
+        @keyframes spin-counter-clockwise {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(-360deg); /* El valor negativo lo hace girar en sentido antihorario */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Verificador de Peso</h2>
+        <form id="weight-form">
+            <div class="input-group">
+                <label>Género:</label>
+                <div class="gender-options">
+                    <div>
+                        <input type="radio" id="masculino" name="genero" value="masculino" checked>
+                        <label for="masculino">Masculino</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="femenino" name="genero" value="femenino">
+                        <label for="femenino">Femenino</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="peso-input">Peso (en kg):</label>
+                <input type="number" id="peso-input" placeholder="Ej: 75" required>
+            </div>
+
+            <button type="submit">Verificar</button>
+        </form>
+
+        <div id="result-container">
+            <img id="rotating-image" src="\\image.png" alt="Imagen giratoria" class="hidden">
+        </div>
+        
+        <audio id="sound-effect" src="oyegelda.mp3"></audio>
+    </div>
+
+    <script>
+        // --- LÓGICA (JavaScript) ---
+
+        // 1. Seleccionar los elementos del HTML con los que vamos a interactuar
+        const form = document.getElementById('weight-form');
+        const pesoInput = document.getElementById('peso-input');
+        const imagen = document.getElementById('rotating-image');
+        const audio = document.getElementById('sound-effect');
+
+        // 2. Escuchar el evento 'submit' del formulario
+        form.addEventListener('submit', function(event) {
+            // Prevenir que la página se recargue al enviar el formulario
+            event.preventDefault();
+
+            // 3. Obtener el valor del peso y convertirlo a número
+            const peso = parseFloat(pesoInput.value);
+
+            // 4. Verificar la condición: si el peso es mayor a 80
+            if (peso > 80) {
+                // Si se cumple, mostramos la imagen y añadimos la clase para que gire
+                imagen.classList.remove('hidden'); // Quita la clase 'hidden' para mostrar la imagen
+                imagen.classList.add('spinning'); // Añade la clase 'spinning' para que empiece a girar
+                
+                // Reproducimos el sonido
+                audio.currentTime = 0; // Reinicia el audio por si se presionó antes
+                audio.play();
+
+            } else {
+                // Si no se cumple, nos aseguramos de que todo esté oculto y detenido
+                imagen.classList.add('hidden'); // Oculta la imagen
+                imagen.classList.remove('spinning'); // Le quita la animación por si estaba girando
+                
+                // Detenemos el sonido y lo reiniciamos
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        });
+    </script>
+
+</body>
+</html>
