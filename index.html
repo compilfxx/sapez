@@ -81,7 +81,14 @@
             min-height: 150px; /* Espacio reservado para la imagen */
         }
         
-        #rotating-image {
+        #result-text {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .result-image {
             width: 150px;
             height: 150px;
             border-radius: 50%; /* Hace la imagen redonda */
@@ -137,10 +144,14 @@
         </form>
 
         <div id="result-container">
-            <img id="rotating-image" src="image.png" alt="Imagen giratoria" class="hidden">
+            <img id="image-heavy" src="image.png" alt="Imagen si el peso es alto" class="result-image hidden">
+            <img id="image-light" src="image2.png" alt="Imagen si el peso es bajo" class="result-image hidden">
+            <div id="result-text"></div>
         </div>
-        
-        <audio id="sound-effect" src="oyegelda.mp3"></audio>
+    
+        <audio id="sound-heavy" src="oyegelda.mp3"></audio>
+        <audio id="sound-light" src="success.mp3"></audio> 
+
     </div>
 
     <script>
@@ -149,35 +160,60 @@
         // 1. Seleccionar los elementos del HTML con los que vamos a interactuar
         const form = document.getElementById('weight-form');
         const pesoInput = document.getElementById('peso-input');
-        const imagen = document.getElementById('rotating-image');
-        const audio = document.getElementById('sound-effect');
+        const imageHeavy = document.getElementById('image-heavy');
+        const imageLight = document.getElementById('image-light'); // Nueva imagen
+        const soundHeavy = document.getElementById('sound-heavy');
+        const soundLight = document.getElementById('sound-light'); // Nuevo audio
+        const resultText = document.getElementById('result-text'); // Nuevo elemento para el texto
 
         // 2. Escuchar el evento 'submit' del formulario
         form.addEventListener('submit', function(event) {
             // Prevenir que la página se recargue al enviar el formulario
             event.preventDefault();
 
-            // 3. Obtener el valor del peso y convertirlo a número
+            // 3. Obtener el valor del peso y el género seleccionado
             const peso = parseFloat(pesoInput.value);
+            const genero = document.querySelector('input[name="genero"]:checked').value;
+
+            // Ocultar ambas imágenes, detener ambos audios y limpiar el texto
+            imageHeavy.classList.add('hidden');
+            imageHeavy.classList.remove('spinning');
+            imageLight.classList.add('hidden');
+            soundHeavy.pause();
+            soundHeavy.currentTime = 0;
+            soundLight.pause();
+            soundLight.currentTime = 0;
+            resultText.textContent = ''; // Limpiar el texto anterior
 
             // 4. Verificar la condición: si el peso es mayor a 80
             if (peso > 80) {
-                // Si se cumple, mostramos la imagen y añadimos la clase para que gire
-                imagen.classList.remove('hidden'); // Quita la clase 'hidden' para mostrar la imagen
-                imagen.classList.add('spinning'); // Añade la clase 'spinning' para que empiece a girar
+                // Si se cumple (peso > 80), mostramos la imagen "pesado" y añadimos la clase para que gire
+                imageHeavy.classList.remove('hidden'); 
+                imageHeavy.classList.add('spinning'); 
                 
-                // Reproducimos el sonido
-                audio.currentTime = 0; // Reinicia el audio por si se presionó antes
-                audio.play();
+                // Reproducimos el sonido "pesado"
+                soundHeavy.play();
 
-            } else {
-                // Si no se cumple, nos aseguramos de que todo esté oculto y detenido
-                imagen.classList.add('hidden'); // Oculta la imagen
-                imagen.classList.remove('spinning'); // Le quita la animación por si estaba girando
+                // Mostramos el texto según el género
+                if (genero === 'masculino') {
+                    resultText.textContent = '¡Cuidado, campeón! ¡A bajar esa panza!';
+                } else {
+                    resultText.textContent = '¡Ojo, reina! ¡A cuidar esa figura!';
+                }
+
+            } else { // Si el peso es 80 o menor
+                // Mostramos la imagen "ligero" (sin girar)
+                imageLight.classList.remove('hidden'); 
                 
-                // Detenemos el sonido y lo reiniciamos
-                audio.pause();
-                audio.currentTime = 0;
+                // Reproducimos el sonido "ligero"
+                soundLight.play();
+
+                // Mostramos el texto según el género
+                if (genero === 'masculino') {
+                    resultText.textContent = '¡Excelente! ¡Estás en forma!';
+                } else {
+                    resultText.textContent = '¡Fantástico! ¡Mantienes una buena línea!';
+                }
             }
         });
     </script>
